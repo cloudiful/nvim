@@ -56,7 +56,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Tree-sitter CLI
-        run: cargo install tree-sitter-cli --version 0.26.1 --locked
+        run: cargo install tree-sitter-cli --locked
 
       - name: Check Neovim version
         run: >-
