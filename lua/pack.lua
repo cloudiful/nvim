@@ -39,7 +39,7 @@ end
 
 local function load_plugin(name)
   if vim.fn.isdirectory(plugin_path(name)) ~= 1 then
-    error(("Missing bundled plugin %q. This source checkout is not built yet; run scripts/package.sh and install the resulting nvim bundle."):format(name))
+    error(("Missing bundled plugin %q. This source checkout is not built yet; run `uv run nvim-bundle package --target <target>` and install the resulting nvim bundle."):format(name))
   end
   vim.cmd.packadd({ name, bang = true, magic = { file = false } })
 end

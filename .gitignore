@@ -5,3 +5,6 @@ nvim.log
 /.data/
 /runtime/
 /nvim-config-*.tar.zst
+.venv/
+__pycache__/
+.pytest_cache/

@@ -34,6 +34,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Sync Python project
+        run: uv sync --locked
+
+      - name: Test Python build tool
+        run: uv run --locked python -m unittest discover -s tests -v
+
       - name: Install Linux tools
         if: startsWith(matrix.target, 'linux-')
         run: |
@@ -50,17 +64,13 @@ jobs:
         run: choco install zstandard --yes --no-progress
 
       - name: Install Neovim
-        env:
-          NVIM_VERSION: 0.12.4
-        run: scripts/install_nvim.sh
+        run: uv run --locked nvim-bundle install-nvim --version 0.12.4
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Tree-sitter CLI
-        env:
-          TREE_SITTER_CLI_VERSION: 0.26.11
-        run: scripts/install_treesitter_cli.sh
+        run: uv run --locked nvim-bundle install-tree-sitter --version 0.26.11
 
       - name: Check Neovim version
         run: >-
@@ -75,10 +85,10 @@ jobs:
           version: 0.14.1
 
       - name: Build bundle
-        env:
-          NVIM_BUNDLE_TARGET: ${{ matrix.target }}
-          NVIM_BUNDLE_OUTPUT_DIR: ${{ runner.temp }}/nvim-config-output
-        run: scripts/package.sh
+        run: >-
+          uv run --locked nvim-bundle package
+          --target ${{ matrix.target }}
+          --output-dir ${{ runner.temp }}/nvim-config-output
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
