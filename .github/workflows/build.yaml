@@ -1,0 +1,121 @@
+name: Build Neovim Config
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x86_64-musl
+            runner: ubuntu-latest
+          - target: linux-aarch64-musl
+            runner: ubuntu-latest
+          - target: macos-arm64
+            runner: macos-14
+          - target: windows-x86_64
+            runner: windows-2022
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Linux tools
+        if: startsWith(matrix.target, 'linux-')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl git zstd software-properties-common
+          sudo add-apt-repository ppa:neovim-ppa/unstable -y
+          sudo apt-get update
+          sudo apt-get install -y neovim
+
+      - name: Install macOS tools
+        if: matrix.target == 'macos-arm64'
+        run: brew install neovim zstd
+
+      - name: Install Windows tools
+        if: matrix.target == 'windows-x86_64'
+        shell: pwsh
+        run: choco install neovim zstandard --yes --no-progress
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Tree-sitter CLI
+        run: cargo install tree-sitter-cli --version 0.26.1 --locked
+
+      - name: Check Neovim version
+        run: >-
+          nvim --headless -u NONE
+          '+lua assert(vim.version().major == 0 and vim.version().minor >= 12, "Neovim 0.12+ is required")'
+          '+qa!'
+
+      - name: Install Zig cross compiler
+        if: startsWith(matrix.target, 'linux-')
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.14.1
+
+      - name: Configure Linux parser compiler
+        if: startsWith(matrix.target, 'linux-')
+        run: |
+          if [[ "${{ matrix.target }}" == "linux-x86_64-musl" ]]; then
+            zig_target=x86_64-linux-musl
+          else
+            zig_target=aarch64-linux-musl
+          fi
+          cat > "$RUNNER_TEMP/ts-cc" <<EOF
+          #!/usr/bin/env sh
+          exec zig cc -target $zig_target "\$@"
+          EOF
+          cat > "$RUNNER_TEMP/ts-cxx" <<EOF
+          #!/usr/bin/env sh
+          exec zig c++ -target $zig_target "\$@"
+          EOF
+          chmod +x "$RUNNER_TEMP/ts-cc" "$RUNNER_TEMP/ts-cxx"
+          echo "CC=$RUNNER_TEMP/ts-cc" >> "$GITHUB_ENV"
+          echo "CXX=$RUNNER_TEMP/ts-cxx" >> "$GITHUB_ENV"
+
+      - name: Build bundle
+        env:
+          NVIM_BUNDLE_TARGET: ${{ matrix.target }}
+          NVIM_BUNDLE_OUTPUT_DIR: ${{ runner.temp }}/nvim-config-output
+        run: scripts/package.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nvim-config-${{ matrix.target }}
+          path: ${{ runner.temp }}/nvim-config-output/*.tar.zst
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release/*.tar.zst

@@ -1,0 +1,7 @@
+.idea/
+nvim.iml
+nvim.log
+/.build/
+/.data/
+/runtime/
+/nvim-config-*.tar.zst

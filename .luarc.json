@@ -1,0 +1,10 @@
+{
+    "$schema": ".luarc.schema.json",
+    "workspace.library": [
+        "/opt/homebrew/share/nvim/runtime",
+        "C:\\Program Files\\Neovim\\share\\nvim\\runtime",
+        "/usr/share/nvim/runtime",
+        "pack/plugins/start"
+    ],
+    "runtime.version": "LuaJIT"
+}
