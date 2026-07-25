@@ -11,7 +11,6 @@ NVIM_SOURCE_ROOT="$(nvim_native_path "$ROOT")"
 FETCH_SCRIPT="$(nvim_native_path "$ROOT/scripts/fetch_plugins.lua")"
 
 mkdir -p "$STAGE/.data" "$STAGE/runtime" "$STAGE/.build/config/nvim"
-cp "$ROOT/nvim-pack-lock.json" "$STAGE/.build/config/nvim/nvim-pack-lock.json"
 
 XDG_CONFIG_HOME="$NVIM_CONFIG_HOME" \
 XDG_DATA_HOME="$NVIM_DATA_HOME" \
