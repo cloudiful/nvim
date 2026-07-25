@@ -17,3 +17,16 @@ nvim_native_path() {
       ;;
   esac
 }
+
+nvim_data_dir_name() {
+  local os="${RUNNER_OS:-$(uname -s)}"
+
+  case "$os" in
+    Windows|MINGW*|MSYS*)
+      printf '%s\n' nvim-data
+      ;;
+    *)
+      printf '%s\n' nvim
+      ;;
+  esac
+}

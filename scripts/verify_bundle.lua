@@ -1,7 +1,8 @@
 local root = vim.fn.stdpath("config")
 local specs = require("plugin_specs")
 local lock = vim.json.decode(table.concat(vim.fn.readfile(root .. "/nvim-pack-lock.json"), "\n"))
-local plugin_root = root .. "/.data/nvim/site/pack/core/opt"
+local data_dir_name = vim.fn.has("win32") == 1 and "nvim-data" or "nvim"
+local plugin_root = vim.fs.joinpath(root, ".data", data_dir_name, "site", "pack", "core", "opt")
 
 for _, spec in ipairs(specs.all()) do
   assert(lock.plugins[spec.name], "Missing lock entry: " .. spec.name)

@@ -64,7 +64,7 @@ jobs:
 
       - name: Check Neovim version
         run: >-
-          nvim --headless -u NONE
+          nvim --headless -i NONE -u NONE
           '+lua assert(vim.version().major == 0 and vim.version().minor >= 12, "Neovim 0.12+ is required")'
           '+qa!'
 

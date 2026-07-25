@@ -4,9 +4,9 @@ set -euo pipefail
 STAGE="${NVIM_BUNDLE_STAGE:?NVIM_BUNDLE_STAGE is required}"
 TARGET="${NVIM_BUNDLE_TARGET:?NVIM_BUNDLE_TARGET is required}"
 VERSION="${BLINK_VERSION:-v1.10.2}"
-BLINK_DIR="$STAGE/.data/nvim/site/pack/core/opt/blink.cmp"
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT/scripts/nvim_paths.sh"
+BLINK_DIR="$STAGE/.data/$(nvim_data_dir_name)/site/pack/core/opt/blink.cmp"
 
 NVIM_BLINK_DIR="$(nvim_native_path "$BLINK_DIR")"
 PATCH_SCRIPT="$(nvim_native_path "$ROOT/scripts/patch_blink_offline.lua")"
@@ -84,4 +84,4 @@ printf '%s\n' "$VERSION" > "$LIB_DIR/version"
 
 BLINK_PLUGIN_DIR="$NVIM_BLINK_DIR" \
 BLINK_VERSION="$VERSION" \
-nvim --headless -u NONE -l "$PATCH_SCRIPT"
+nvim --headless -i NONE -u NONE -l "$PATCH_SCRIPT"

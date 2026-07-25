@@ -2,7 +2,8 @@ local specs = require("plugin_specs")
 
 local M = {}
 local config_root = vim.fn.stdpath("config")
-local bundled_site = config_root .. "/.data/nvim/site"
+local data_dir_name = vim.fn.has("win32") == 1 and "nvim-data" or "nvim"
+local bundled_site = vim.fs.joinpath(config_root, ".data", data_dir_name, "site")
 local bundled_runtime = config_root .. "/runtime"
 
 vim.opt.packpath:prepend(bundled_site)
