@@ -5,6 +5,11 @@ STAGE="${NVIM_BUNDLE_STAGE:?NVIM_BUNDLE_STAGE is required}"
 TARGET="${NVIM_BUNDLE_TARGET:?NVIM_BUNDLE_TARGET is required}"
 VERSION="${BLINK_VERSION:-v1.10.2}"
 BLINK_DIR="$STAGE/.data/nvim/site/pack/core/opt/blink.cmp"
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT/scripts/nvim_paths.sh"
+
+NVIM_BLINK_DIR="$(nvim_native_path "$BLINK_DIR")"
+PATCH_SCRIPT="$(nvim_native_path "$ROOT/scripts/patch_blink_offline.lua")"
 BASE_URL="${BLINK_RELEASE_BASE_URL:-https://github.com/Saghen/blink.cmp/releases/download/$VERSION}"
 
 case "$TARGET" in
@@ -77,6 +82,6 @@ fi
 
 printf '%s\n' "$VERSION" > "$LIB_DIR/version"
 
-BLINK_PLUGIN_DIR="$BLINK_DIR" \
+BLINK_PLUGIN_DIR="$NVIM_BLINK_DIR" \
 BLINK_VERSION="$VERSION" \
-nvim --headless -u NONE -l "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/patch_blink_offline.lua"
+nvim --headless -u NONE -l "$PATCH_SCRIPT"

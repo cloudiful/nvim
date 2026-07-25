@@ -5,6 +5,7 @@ ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${NVIM_BUNDLE_TARGET:?NVIM_BUNDLE_TARGET is required}"
 OUT_DIR="${NVIM_BUNDLE_OUTPUT_DIR:-$ROOT/.build/output}"
 STAGE="${NVIM_BUNDLE_STAGE:-$ROOT/.build/bundle/nvim}"
+source "$ROOT/scripts/nvim_paths.sh"
 
 rm -rf "$ROOT/.build/bundle" "$OUT_DIR"
 mkdir -p "$STAGE" "$OUT_DIR"
@@ -23,11 +24,14 @@ if [[ "$TARGET" == linux-*-musl ]]; then
   TREESITTER_SKIP_LOAD=1
 fi
 
-XDG_CONFIG_HOME="$ROOT/.build/bundle" \
+XDG_CONFIG_HOME="$(nvim_native_path "$ROOT/.build/bundle")" \
 NVIM_APPNAME=nvim \
-TREESITTER_LANGUAGES_FILE="$ROOT/build/treesitter-languages.txt" \
+TREESITTER_LANGUAGES_FILE="$(nvim_native_path "$ROOT/build/treesitter-languages.txt")" \
 TREESITTER_SKIP_LOAD="$TREESITTER_SKIP_LOAD" \
-nvim --headless -u "$STAGE/init.lua" -c "luafile $ROOT/scripts/verify_bundle.lua" -c 'qa!'
+nvim --headless \
+  -u "$(nvim_native_path "$STAGE/init.lua")" \
+  -c "luafile $(nvim_native_path "$ROOT/scripts/verify_bundle.lua")" \
+  -c 'qa!'
 
 ARCHIVE="$OUT_DIR/nvim-config-$TARGET.tar.zst"
 tar -C "$ROOT/.build/bundle" -cf - nvim \
