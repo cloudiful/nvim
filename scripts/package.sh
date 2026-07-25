@@ -12,15 +12,21 @@ cp "$ROOT/init.lua" "$ROOT/nvim-pack-lock.json" "$ROOT/README.md" "$STAGE/"
 cp -R "$ROOT/lua" "$STAGE/lua"
 
 NVIM_BUNDLE_STAGE="$STAGE" "$ROOT/scripts/fetch_plugins.sh"
-NVIM_BUNDLE_STAGE="$STAGE" "$ROOT/scripts/build_treesitter.sh"
+NVIM_BUNDLE_STAGE="$STAGE" NVIM_BUNDLE_TARGET="$TARGET" "$ROOT/scripts/build_treesitter.sh"
 NVIM_BUNDLE_STAGE="$STAGE" NVIM_BUNDLE_TARGET="$TARGET" "$ROOT/scripts/fetch_blink.sh"
 
 find "$STAGE/.data/nvim/site/pack/core/opt" -type d -name .git -prune -exec rm -rf {} +
 rm -rf "$STAGE/.build"
 
+TREESITTER_SKIP_LOAD=0
+if [[ "$TARGET" == linux-*-musl ]]; then
+  TREESITTER_SKIP_LOAD=1
+fi
+
 XDG_CONFIG_HOME="$ROOT/.build/bundle" \
 NVIM_APPNAME=nvim \
 TREESITTER_LANGUAGES_FILE="$ROOT/build/treesitter-languages.txt" \
+TREESITTER_SKIP_LOAD="$TREESITTER_SKIP_LOAD" \
 nvim --headless -u "$STAGE/init.lua" -c "luafile $ROOT/scripts/verify_bundle.lua" -c 'qa!'
 
 ARCHIVE="$OUT_DIR/nvim-config-$TARGET.tar.zst"

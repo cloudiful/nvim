@@ -15,7 +15,9 @@ for _, language in ipairs(languages) do
   local queries = root .. "/runtime/queries/" .. language
   assert(vim.uv.fs_stat(parser), "Missing parser: " .. language)
   assert(vim.uv.fs_stat(queries), "Missing queries: " .. language)
-  assert(pcall(vim.treesitter.language.add, language), "Cannot load parser: " .. language)
+  if vim.env.TREESITTER_SKIP_LOAD ~= "1" then
+    assert(pcall(vim.treesitter.language.add, language), "Cannot load parser: " .. language)
+  end
 end
 
 local blink_root = plugin_root .. "/blink.cmp/target/release"

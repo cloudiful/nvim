@@ -44,7 +44,29 @@ else
 fi
 test "$EXPECTED" = "$ACTUAL"
 
-tar -xf "$ARCHIVE" -C "$HOST_DIR"
+case "$ASSET" in
+  *.tar.gz)
+    tar -xzf "$ARCHIVE" -C "$HOST_DIR"
+    ;;
+  *.zip)
+    if [[ "$OS" == Windows || "$OS" == MINGW* || "$OS" == MSYS* ]] \
+      && command -v powershell.exe >/dev/null 2>&1; then
+      ARCHIVE_WIN="$(cygpath -w "$ARCHIVE")"
+      HOST_DIR_WIN="$(cygpath -w "$HOST_DIR")"
+      powershell.exe -NoProfile -NonInteractive -Command \
+        "Expand-Archive -LiteralPath '$ARCHIVE_WIN' -DestinationPath '$HOST_DIR_WIN' -Force"
+    elif command -v unzip >/dev/null 2>&1; then
+      unzip -q "$ARCHIVE" -d "$HOST_DIR"
+    else
+      echo "No ZIP extractor found for $ARCHIVE" >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Unsupported Neovim archive: $ASSET" >&2
+    exit 1
+    ;;
+esac
 rm -f "$ARCHIVE"
 
 NVIM_BIN="$(find "$HOST_DIR" -type f \( -name nvim -o -name nvim.exe \) -print -quit)"

@@ -57,6 +57,24 @@ end
     end]],
     1
   )
+end
+
+if not install_content:find("Keep downloaded parser sources for cross-compilation", 1, true) then
+  local cleanup_block = [[
+  -- clean up
+  if repo and not repo.path then
+    rmpath(fs.joinpath(cache_dir, project_name))
+    a.schedule()
+  end
+]]
+  if not install_content:find(cleanup_block, 1, true) then
+    error("Unexpected nvim-treesitter cleanup layout")
+  end
+  install_content = install_content:gsub(
+    vim.pesc(cleanup_block),
+    "\n  -- Keep downloaded parser sources for cross-compilation.\n",
+    1
+  )
   vim.fn.writefile(vim.split(install_content, "\n", { plain = true }), install_lua)
 end
 

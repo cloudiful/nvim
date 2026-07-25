@@ -13,8 +13,16 @@ git -C "$TS_DIR" fetch --depth=1 origin "$TS_REV"
 git -C "$TS_DIR" checkout --detach --quiet "$TS_REV"
 
 mkdir -p "$STAGE/runtime/parser" "$STAGE/runtime/queries"
+export XDG_CACHE_HOME="$STAGE/.build/cache"
 TREESITTER_PLUGIN_DIR="$TS_DIR" \
 TREESITTER_INSTALL_DIR="$STAGE/runtime" \
 TREESITTER_LANGUAGES_FILE="$ROOT/build/treesitter-languages.txt" \
 TREESITTER_MAX_JOBS="${TREESITTER_MAX_JOBS:-}" \
 nvim --headless -u NONE -l "$ROOT/scripts/build_treesitter.lua"
+
+if [[ "$NVIM_BUNDLE_TARGET" == linux-*-musl ]]; then
+  TREESITTER_LANGUAGES_FILE="$ROOT/build/treesitter-languages.txt" \
+  NVIM_BUNDLE_STAGE="$STAGE" \
+  NVIM_BUNDLE_TARGET="$NVIM_BUNDLE_TARGET" \
+  "$ROOT/scripts/cross_compile_treesitter.sh"
+fi
