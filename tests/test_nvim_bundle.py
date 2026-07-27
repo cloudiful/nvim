@@ -17,6 +17,7 @@ from nvim_bundle.download import (
 )
 from nvim_bundle.install import _extract_archive
 from nvim_bundle.models import NVIM_ASSETS, TARGETS
+from nvim_bundle.package import _remove_readonly
 from nvim_bundle.runtime import host_key
 from nvim_bundle.treesitter import find_parser_source, find_scanner_source
 
@@ -114,6 +115,18 @@ class InstallTests(unittest.TestCase):
                 (destination / "nvim-win64" / "bin" / "nvim.exe").read_text(),
                 "binary",
             )
+
+    @patch("nvim_bundle.package.os.chmod")
+    def test_readonly_cleanup_retries(self, chmod) -> None:
+        removed = []
+
+        def remove(path):
+            removed.append(path)
+
+        _remove_readonly(remove, "locked", PermissionError("denied"))
+
+        chmod.assert_called_once()
+        self.assertEqual(removed, ["locked"])
 
 
 class TreeSitterTests(unittest.TestCase):

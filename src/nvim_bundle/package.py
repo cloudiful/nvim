@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-import shutil
-import subprocess
 import json
+import os
+import shutil
+import stat
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -124,7 +126,14 @@ def remove_git_directories(root: Path) -> None:
         raise BuildError(f"Plugin directory is missing: {root}")
     for directory in sorted(root.rglob(".git"), reverse=True):
         if directory.is_dir():
-            shutil.rmtree(directory)
+            shutil.rmtree(directory, onexc=_remove_readonly)
+
+
+def _remove_readonly(function, path, exc) -> None:
+    if not isinstance(exc, PermissionError):
+        raise exc
+    os.chmod(path, stat.S_IWRITE)
+    function(path)
 
 
 def verify_bundle(root: Path, bundle_root: Path, stage: Path, target: Target) -> None:
