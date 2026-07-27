@@ -16,7 +16,7 @@ from nvim_bundle.download import (
     parse_checksum,
 )
 from nvim_bundle.install import _extract_archive
-from nvim_bundle.models import TARGETS
+from nvim_bundle.models import NVIM_ASSETS, TARGETS
 from nvim_bundle.runtime import host_key
 from nvim_bundle.treesitter import find_parser_source, find_scanner_source
 
@@ -39,6 +39,10 @@ class TargetTests(unittest.TestCase):
     @patch("platform.machine", return_value="arm64")
     def test_host_key_normalizes_platform(self, _machine, _system) -> None:
         self.assertEqual(host_key(), ("Darwin", "arm64"))
+
+    def test_nvim_asset_checksums_are_sha256(self) -> None:
+        for asset in NVIM_ASSETS.values():
+            self.assertRegex(asset.expected_sha256, r"^[0-9a-f]{64}$")
 
 
 class DownloadTests(unittest.TestCase):

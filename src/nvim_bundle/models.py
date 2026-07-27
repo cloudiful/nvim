@@ -77,7 +77,7 @@ NVIM_ASSETS = {
     ),
     ("Windows", "x86_64"): HostAsset(
         "nvim-win64.zip",
-        "9fc3572829ffd13debb6e325da2c8cc02555568260a9fc4cf1f65bbcca319c",
+        "9fc3572829ffd13debb6e32555da2c8cc02555568260a9fc4cf1f65bbcca319c",
         "nvim.exe",
     ),
 }
