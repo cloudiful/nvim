@@ -27,6 +27,5 @@ local extension = jit.os:lower() == "windows" and ".dll"
   or ".so"
 local prefix = extension == ".dll" and "blink_cmp_fuzzy" or "libblink_cmp_fuzzy"
 assert(vim.uv.fs_stat(blink_root .. "/" .. prefix .. extension), "Missing blink native library")
-assert(vim.uv.fs_stat(blink_root .. "/version"), "Missing blink native version")
 
 assert(pcall(require, "blink.cmp.fuzzy.rust"), "Cannot load blink native library")

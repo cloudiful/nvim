@@ -78,7 +78,10 @@ class BlinkTests(unittest.TestCase):
     @patch("nvim_bundle.blink.download", side_effect=DownloadNotFound("missing"))
     def test_404_uses_source_fallback(self, _download, build, _run) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            fetch_blink(Path(directory), Path(directory) / "stage", TARGETS["macos-arm64"])
+            stage = Path(directory) / "stage"
+            fetch_blink(Path(directory), stage, TARGETS["macos-arm64"])
+            version_files = list(stage.rglob("blink.cmp/target/release/version"))
+            self.assertEqual(version_files, [])
         build.assert_called_once()
 
     @patch("nvim_bundle.blink.build_from_source")

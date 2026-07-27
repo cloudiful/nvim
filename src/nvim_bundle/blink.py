@@ -39,7 +39,6 @@ def fetch_blink(
         checksum_file.unlink(missing_ok=True)
         build_from_source(plugin_dir, target, library)
 
-    (library_dir / "version").write_text(f"{version}\n", encoding="utf-8")
     patch_script = root / "scripts" / "patch_blink_offline.lua"
     env = environment(BLINK_PLUGIN_DIR=plugin_dir, BLINK_VERSION=version)
     run(["nvim", "--headless", "-i", "NONE", "-u", "NONE", "-l", patch_script], env=env)
