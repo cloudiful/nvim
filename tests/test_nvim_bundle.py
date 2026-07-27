@@ -76,7 +76,8 @@ class BlinkTests(unittest.TestCase):
     @patch("nvim_bundle.blink.run")
     @patch("nvim_bundle.blink.build_from_source")
     @patch("nvim_bundle.blink.download", side_effect=DownloadNotFound("missing"))
-    def test_404_uses_source_fallback(self, _download, build, _run) -> None:
+    @patch("nvim_bundle.blink.require_tools")
+    def test_404_uses_source_fallback(self, _require_tools, _download, build, _run) -> None:
         with tempfile.TemporaryDirectory() as directory:
             stage = Path(directory) / "stage"
             fetch_blink(Path(directory), stage, TARGETS["macos-arm64"])
@@ -86,7 +87,10 @@ class BlinkTests(unittest.TestCase):
 
     @patch("nvim_bundle.blink.build_from_source")
     @patch("nvim_bundle.blink.download", side_effect=DownloadError("bad checksum"))
-    def test_integrity_error_does_not_use_source_fallback(self, _download, build) -> None:
+    @patch("nvim_bundle.blink.require_tools")
+    def test_integrity_error_does_not_use_source_fallback(
+        self, _require_tools, _download, build
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(DownloadError):
                 fetch_blink(Path(directory), Path(directory) / "stage", TARGETS["macos-arm64"])
