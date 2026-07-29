@@ -29,3 +29,23 @@ local prefix = extension == ".dll" and "blink_cmp_fuzzy" or "libblink_cmp_fuzzy"
 assert(vim.uv.fs_stat(blink_root .. "/" .. prefix .. extension), "Missing blink native library")
 
 assert(pcall(require, "blink.cmp.fuzzy.rust"), "Cannot load blink native library")
+
+local pack = require("pack")
+
+pack.ensure("neo_tree")
+assert(vim.fn.exists(":Neotree") == 2, "Neo-tree command is not registered")
+vim.cmd("Neotree reveal")
+vim.cmd("Neotree close")
+
+pack.ensure("diffview")
+for _, command_name in ipairs(specs.diffview_commands) do
+  assert(vim.fn.exists(":" .. command_name) == 2, "Missing Diffview command: " .. command_name)
+end
+
+vim.cmd("edit docker-compose.yml")
+assert(vim.bo.filetype == "yaml.docker-compose", "Compose filetype was not detected")
+
+assert(vim.fn.maparg("[b", "n") ~= "", "Missing previous-buffer mapping")
+assert(vim.fn.maparg("]b", "n") ~= "", "Missing next-buffer mapping")
+assert(vim.fn.maparg(" bp", "n") == "", "Obsolete previous-buffer mapping still exists")
+assert(vim.fn.maparg(" bn", "n") == "", "Obsolete next-buffer mapping still exists")

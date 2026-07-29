@@ -22,3 +22,19 @@ Run the Python tests with:
 ```sh
 uv run python -m unittest discover -s tests -v
 ```
+
+## Optional Runtime Tools
+
+The core bundle does not contain formatter binaries or language servers.
+Conform formats manually with `<leader>fm` when these commands are available
+from the project environment, `mise`, or `PATH`:
+
+- `stylua` for Lua
+- `rustfmt` for Rust
+- `gofmt` for Go
+- `shfmt` for Bash and shell scripts
+- `prettierd` or `prettier` for JavaScript, TypeScript, Vue, JSON, YAML, and Markdown
+
+Java uses the full `nvim-jdtls` mode. Install a `jdtls` executable, Java 21 or
+newer, and Maven or Gradle project tooling. Java debug and test integrations
+are intentionally not included.

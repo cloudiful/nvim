@@ -59,6 +59,12 @@ end
 
 local function close_buffer()
     local current_buf = vim.api.nvim_get_current_buf()
+
+    if vim.bo[current_buf].modified then
+        vim.notify('Buffer has unsaved changes; save or discard them first', vim.log.levels.WARN)
+        return
+    end
+
     local alternate_buf = vim.fn.bufnr('#')
 
     if vim.api.nvim_buf_is_valid(alternate_buf) then
@@ -70,7 +76,7 @@ local function close_buffer()
         end
     end
 
-    vim.api.nvim_buf_delete(current_buf, { force = true })
+    vim.api.nvim_buf_delete(current_buf, {})
 end
 
 map('n', '<leader>e', function()
@@ -101,14 +107,6 @@ end, 'Format')
 map('n', '<leader>bb', function()
     ensure_fzf().buffers()
 end, 'Buffers')
-
-map('n', '<leader>bp', function()
-    vim.cmd('bprevious')
-end, 'Previous buffer')
-
-map('n', '<leader>bn', function()
-    vim.cmd('bnext')
-end, 'Next buffer')
 
 map('n', '<leader>bd', close_buffer, 'Delete buffer')
 

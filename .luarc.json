@@ -3,8 +3,7 @@
     "workspace.library": [
         "/opt/homebrew/share/nvim/runtime",
         "C:\\Program Files\\Neovim\\share\\nvim\\runtime",
-        "/usr/share/nvim/runtime",
-        "pack/plugins/start"
+        "/usr/share/nvim/runtime"
     ],
     "runtime.version": "LuaJIT"
 }

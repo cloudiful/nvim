@@ -10,6 +10,7 @@ wk.add({
     { "<leader>b", group = "buffers" },
     { "<leader>r", group = "rename" },
     { "<leader>c", group = "code" },
+    { "<leader>j", group = "java" },
     { "<leader>w", proxy = "<c-w>", group = "windows" },
     { "[", group = "previous" },
     { "]", group = "next" },

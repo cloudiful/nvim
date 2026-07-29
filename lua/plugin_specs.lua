@@ -76,9 +76,8 @@ M.configs = {
   conform = "plugins.conform",
   neo_tree = "plugins.neo-tree",
   noice = "plugins.noice",
-  gitsigns = "plugins.gitsigns",
+  java = "plugins.java",
   which_key = "plugins.which-key",
-  render_markdown = "plugins.render-markdown",
 }
 
 M.startup_groups = {

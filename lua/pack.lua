@@ -41,7 +41,7 @@ local function load_plugin(name)
   if vim.fn.isdirectory(plugin_path(name)) ~= 1 then
     error(("Missing bundled plugin %q. This source checkout is not built yet; run `uv run nvim-bundle package --target <target>` and install the resulting nvim bundle."):format(name))
   end
-  vim.cmd.packadd({ name, bang = true, magic = { file = false } })
+  vim.cmd.packadd({ name, magic = { file = false } })
 end
 
 local function add_group(group)
@@ -122,8 +122,9 @@ local function register_lazy_hooks()
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
     pattern = "java",
-    callback = function()
+    callback = function(args)
       M.ensure("java")
+      require("plugins.java").start_or_attach(args.buf)
     end,
   })
 

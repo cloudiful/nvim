@@ -31,7 +31,6 @@ enable_lsp("yamlls", "yaml-language-server")
 enable_lsp("nushell", "nu")
 enable_lsp("cssls", "vscode-css-language-server")
 enable_lsp("hyprls", "hyprls")
-enable_lsp("jdtls", "jdtls")
 local vue_language_server_path = vim.fn.expand(
 '$HOME/.local/share/mise/installs/node/lts/lib/node_modules/@vue/language-server/')
 local vue_plugin = {
