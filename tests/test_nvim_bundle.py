@@ -24,7 +24,7 @@ from nvim_bundle.download import (
 )
 from nvim_bundle.install import _extract_archive
 from nvim_bundle.models import NVIM_ASSETS, TARGETS
-from nvim_bundle.package import _remove_readonly, archive_name, create_archive
+from nvim_bundle.package import _remove_readonly, archive_name, create_archive, remove_tree
 from nvim_bundle.tools import load_asset_config, parse_manifest, tool_statuses
 from nvim_bundle.runtime import host_key
 from nvim_bundle.treesitter import find_parser_source, find_scanner_source
@@ -269,6 +269,20 @@ class InstallTests(unittest.TestCase):
 
         chmod.assert_called_once()
         self.assertEqual(removed, ["locked"])
+
+    @unittest.skipUnless(os.name == "nt", "Windows read-only attributes are platform-specific")
+    def test_remove_tree_handles_readonly_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "bundle"
+            readonly = root / ".build" / "nvim-treesitter" / "config"
+            readonly.mkdir(parents=True)
+            file = readonly / "index"
+            file.write_text("read-only", encoding="utf-8")
+            file.chmod(0o444)
+
+            remove_tree(root)
+
+            self.assertFalse(root.exists())
 
 
 class TreeSitterTests(unittest.TestCase):

@@ -56,7 +56,7 @@ def package_bundle(root: Path, options: PackageOptions) -> Path:
     stage = bundle_root / "nvim"
     output_dir = options.output_dir
     archive = output_dir / archive_name(target, profile)
-    shutil.rmtree(bundle_root, ignore_errors=True)
+    remove_tree(bundle_root)
     output_dir.mkdir(parents=True, exist_ok=True)
     archive.unlink(missing_ok=True)
     stage.mkdir(parents=True, exist_ok=True)
@@ -86,7 +86,7 @@ def package_bundle(root: Path, options: PackageOptions) -> Path:
 
     plugin_root = stage / ".data" / data_dir_name() / "site" / "pack" / "core" / "opt"
     remove_git_directories(plugin_root)
-    shutil.rmtree(stage / ".build", ignore_errors=True)
+    remove_tree(stage / ".build")
     verify_bundle(root, bundle_root, stage, target)
     create_archive(bundle_root, archive)
     print(archive)
@@ -139,7 +139,12 @@ def remove_git_directories(root: Path) -> None:
         raise BuildError(f"Plugin directory is missing: {root}")
     for directory in sorted(root.rglob(".git"), reverse=True):
         if directory.is_dir():
-            shutil.rmtree(directory, onexc=_remove_readonly)
+            remove_tree(directory)
+
+
+def remove_tree(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path, onexc=_remove_readonly)
 
 
 def _remove_readonly(function, path, exc) -> None:
