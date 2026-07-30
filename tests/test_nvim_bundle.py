@@ -28,6 +28,7 @@ from nvim_bundle.package import _remove_readonly, archive_name, create_archive, 
 from nvim_bundle.tools import load_asset_config, parse_manifest, tool_statuses
 from nvim_bundle.runtime import host_key
 from nvim_bundle.treesitter import find_parser_source, find_scanner_source
+from nvim_bundle.tool_staging import _find_rust_runtime_library_dir
 
 
 class TargetTests(unittest.TestCase):
@@ -108,6 +109,23 @@ class DownloadTests(unittest.TestCase):
                 with self.assertRaises(DownloadError):
                     download_checked("https://example.invalid/asset", path, "0" * 64)
             self.assertFalse(path.exists())
+
+
+class ToolStagingTests(unittest.TestCase):
+    def test_rust_runtime_library_dir_supports_platform_layouts(self) -> None:
+        layouts = (
+            ("windows", "rustc_driver-123.dll", "bin"),
+            ("macos", "librustc_driver-123.dylib", "lib"),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name, filename, expected_dir in layouts:
+                extracted = root / name
+                library_dir = extracted / "rustc-1.97.1" / expected_dir
+                library_dir.mkdir(parents=True)
+                (library_dir / filename).touch()
+
+                self.assertEqual(_find_rust_runtime_library_dir(extracted), library_dir)
 
 
 class ManifestTests(unittest.TestCase):

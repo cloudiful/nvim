@@ -66,6 +66,21 @@ def _windows_path(value: str) -> str:
     return value.replace("/", "\\")
 
 
+def _find_rust_runtime_library_dir(root: Path) -> Path:
+    directories = sorted(
+        {
+            path.parent
+            for path in root.rglob("*rustc_driver*")
+            if path.is_file()
+        }
+    )
+    if len(directories) != 1:
+        raise BuildError(
+            f"Expected one Rust runtime library directory in {root}, found {len(directories)}"
+        )
+    return directories[0]
+
+
 def _write_wrapper(
     stage: Path,
     target: Any,
@@ -172,16 +187,7 @@ def stage_native(
                 Path(temporary) / "runtime",
                 runtime_asset["format"],
             )
-            library_source = next(
-                (
-                    path
-                    for path in extracted_runtime.rglob("lib")
-                    if path.is_dir() and any(path.glob("*rustc_driver*"))
-                ),
-                None,
-            )
-            if library_source is None:
-                raise BuildError(f"Rust runtime library directory is missing: {library_source}")
+            library_source = _find_rust_runtime_library_dir(extracted_runtime)
             shutil.copytree(library_source, runtime_root / "lib")
         library_path = str((runtime_root / "lib").relative_to(stage)).replace(os.sep, "/")
 
