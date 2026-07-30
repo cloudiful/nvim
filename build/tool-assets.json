@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "node_version": "22.17.0",
+  "assets": {
+    "stylua": {
+      "format": "zip",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.5.2/stylua-linux-x86_64-musl.zip", "sha256": "ca6f1cf52eaf69e6632b81acef9c197aa24b85eb30d2455a35e7dbe28ae77c72"},
+        "linux-aarch64-musl": {"url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.5.2/stylua-linux-aarch64-musl.zip", "sha256": "b948df6b4bae41af9a70948174372f96a3c14d44e3e017288701539f3db8fb75"},
+        "macos-arm64": {"url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.5.2/stylua-macos-aarch64.zip", "sha256": "92ff0889e16324801bc072692974bb67f8161e62010fc90f96c62a17f81f32c7"},
+        "windows-x86_64": {"url": "https://github.com/JohnnyMorganz/StyLua/releases/download/v2.5.2/stylua-windows-x86_64.zip", "sha256": "e77d0ea1226b8b389b43f702240091249a96eea25857281f90ea24d0eb9eb969"}
+      }
+    },
+    "rustfmt": {
+      "format": "tar.gz",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustfmt-1.97.1-x86_64-unknown-linux-musl.tar.gz", "sha256": "329a341b3e61046ec18df9067c97777eb1c0930bf574c1e66f67d929f073f5f8"},
+        "linux-aarch64-musl": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustfmt-1.97.1-aarch64-unknown-linux-musl.tar.gz", "sha256": "e5c27f9be28202edc0bcb67271c08a8a41a044cb6dc2a379420af102bd90d2b6"},
+        "macos-arm64": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustfmt-1.97.1-aarch64-apple-darwin.tar.gz", "sha256": "4b8e06290d5db36f514c5429ba4397b6f7d17f165b94fa8bbce2b200c690199b"},
+        "windows-x86_64": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustfmt-1.97.1-x86_64-pc-windows-msvc.tar.gz", "sha256": "ed2217b8490b833c4748b29846fd04d8fe25ea9bb826137041d404166abc8ef1"}
+      }
+    },
+    "rustc-runtime": {
+      "format": "tar.gz",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustc-1.97.1-x86_64-unknown-linux-musl.tar.gz", "sha256": "33a15df85ab0faf63b4c75b1113e47b41fd745a73bdc898c41034e9a9257b154"},
+        "linux-aarch64-musl": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustc-1.97.1-aarch64-unknown-linux-musl.tar.gz", "sha256": "4b83268b416bb524129b85e46cceb92e89ca4e9c44ff6c833afef1df7b72b95e"},
+        "macos-arm64": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustc-1.97.1-aarch64-apple-darwin.tar.gz", "sha256": "b7999e81c1ff2e900e6ba0ecc2ee740654963fd6a26cd7a69b81fd9bdd68a86e"},
+        "windows-x86_64": {"url": "https://static.rust-lang.org/dist/2026-07-16/rustc-1.97.1-x86_64-pc-windows-msvc.tar.gz", "sha256": "b45f488437194f810076ed26cdcc78bf916d40be8f0a55c183f406c909c1af3c"}
+      }
+    },
+    "gofmt": {
+      "format": "tar.gz",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://go.dev/dl/go1.25.12.linux-amd64.tar.gz", "sha256": "234828b7a89e0e303d2556310ee549fbcf253d28de937bac3da13d6294262ac1"},
+        "linux-aarch64-musl": {"url": "https://go.dev/dl/go1.25.12.linux-arm64.tar.gz", "sha256": "8b5884aef89600aef5b0b051fb971f11f49bb996521e911f30f02a66884f7bd2"},
+        "macos-arm64": {"url": "https://go.dev/dl/go1.25.12.darwin-arm64.tar.gz", "sha256": "fa2c88bbcf64bd3b2aef355f026cfec6d3a4a01c132f999c8f8c964eb767164f"},
+        "windows-x86_64": {"url": "https://go.dev/dl/go1.25.12.windows-amd64.zip", "sha256": "d5dc82da351b00e5eedd04f41356817d674cc4308131f0f638a5b14c5c3af4cb"}
+      }
+    },
+    "shfmt": {
+      "format": "raw",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_linux_amd64", "sha256": "fb096c5d1ac6beabbdbaa2874d025badb03ee07929f0c9ff67563ce8c75398b1"},
+        "linux-aarch64-musl": {"url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_linux_arm64", "sha256": "32d92acaa5cd8abb29fc49dac123dc412442d5713967819d8af2c29f1b3857c7"},
+        "macos-arm64": {"url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_darwin_arm64", "sha256": "9680526be4a66ea1ffe988ed08af58e1400fe1e4f4aef5bd88b20bb9b3da33f8"},
+        "windows-x86_64": {"url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_windows_amd64.exe", "sha256": "60cd368533d0ad73fa86d93d5bbf95ef40587245ce684ed138c1b31557b5fe97"}
+      }
+    },
+    "lua-language-server": {
+      "format": "tar.gz",
+      "targets": {
+        "macos-arm64": {"url": "https://github.com/LuaLS/lua-language-server/releases/download/3.18.2/lua-language-server-3.18.2-darwin-arm64.tar.gz", "sha256": "cec99d70b1f612acec4a10a79a03664e3aa0c229d4d8a586cb3f928ec37d509e"},
+        "windows-x86_64": {"url": "https://github.com/LuaLS/lua-language-server/releases/download/3.18.2/lua-language-server-3.18.2-win32-x64.zip", "sha256": "a4439a8f5e8e9e6505c11f045a7bf45db602124a1e246371c1dbe34924f3cf71", "format": "zip"}
+      }
+    },
+    "rust-analyzer": {
+      "format": "gz",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-x86_64-unknown-linux-musl.gz", "sha256": "4793930e0fe32f18ed7e8e689df3ebb03b632f76c16625c44754fb42ce39fc72"},
+        "macos-arm64": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-aarch64-apple-darwin.gz", "sha256": "102215ae7e7a41c0dda8f24e910a01e757f58091204863e5e3e6696b743f7e97"},
+        "windows-x86_64": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-x86_64-pc-windows-msvc.zip", "sha256": "7abdf50734026de963b3b25eba7714be8acf43a15ffb7f4f9d8b041e796ce2c9"}
+      }
+    },
+    "tombi": {
+      "format": "tar.gz",
+      "targets": {
+        "linux-x86_64-musl": {"url": "https://github.com/tombi-toml/tombi/releases/download/v1.2.4/tombi-cli-1.2.4-x86_64-unknown-linux-musl.tar.gz", "sha256": "a74364d9c27835cefd9d7d9e4fee0487a7f68bc5289650e61050d6b0c395dc4d"},
+        "linux-aarch64-musl": {"url": "https://github.com/tombi-toml/tombi/releases/download/v1.2.4/tombi-cli-1.2.4-aarch64-unknown-linux-musl.tar.gz", "sha256": "91504ef7e605fca89ef55aea0a428ee58cf3e435f2650a8a9ce8886dd286b874"},
+        "macos-arm64": {"url": "https://github.com/tombi-toml/tombi/releases/download/v1.2.4/tombi-cli-1.2.4-aarch64-apple-darwin.tar.gz", "sha256": "f05da8a5e619e156057e2e13c452437ac45b0865d73cf371b99763b1b539612b"},
+        "windows-x86_64": {"url": "https://github.com/tombi-toml/tombi/releases/download/v1.2.4/tombi-cli-1.2.4-x86_64-pc-windows-msvc.zip", "sha256": "868d5b9c41503b910fcbdb00e636a5a67c00af168444bffee7297aac3fff00ba", "format": "zip"}
+      }
+    },
+    "node": {
+      "format": "tar.xz",
+      "targets": {
+        "macos-arm64": {"url": "https://nodejs.org/dist/v22.17.0/node-v22.17.0-darwin-arm64.tar.xz", "sha256": "cc9cc294eaf782dd93c8c51f460da610cc35753c6a9947411731524d16e97914"},
+        "windows-x86_64": {"url": "https://nodejs.org/dist/v22.17.0/node-v22.17.0-win-x64.zip", "sha256": "721ab118a3aac8584348b132767eadf51379e0616f0db802cc1e66d7f0d98f85", "format": "zip"}
+      }
+    }
+  },
+  "node_packages": [
+    {"name": "prettier", "version": "3.9.6", "url": "https://registry.npmjs.org/prettier/-/prettier-3.9.6.tgz", "sha256": "997da95cf2ae81053cafc79ef122a6e8dc12e3f2c619d57eb1f2e19525fb212f", "entry": "bin/prettier.cjs"},
+    {"name": "@fsouza/prettierd", "version": "0.29.0", "url": "https://registry.npmjs.org/@fsouza/prettierd/-/prettierd-0.29.0.tgz", "sha256": "3195a481ed2a020deb12f60a9c61dcc8051a4cd5401da7fa7c4596afb5b1fc68", "entry": "bin/prettierd"},
+    {"name": "@vtsls/language-server", "version": "0.3.0", "url": "https://registry.npmjs.org/@vtsls/language-server/-/language-server-0.3.0.tgz", "sha256": "f065ff01476d71395caad2647fb56539bb80131f37081767b2aeee8586cbc0c9", "entry": "bin/vtsls.js"},
+    {"name": "@vue/language-server", "version": "3.3.8", "url": "https://registry.npmjs.org/@vue/language-server/-/language-server-3.3.8.tgz", "sha256": "fe5bfc654d3e57506f58561ade5d036a2f52e8924c581ef24657c7d4f6474f93", "entry": "bin/vue-language-server.js"},
+    {"name": "@vue/typescript-plugin", "version": "3.3.8", "url": "https://registry.npmjs.org/@vue/typescript-plugin/-/typescript-plugin-3.3.8.tgz", "sha256": "f081ea531cb5b90bf8941da6a908b7ffe3553a52cb887210b9c430df24c5a530", "entry": null},
+    {"name": "bash-language-server", "version": "5.6.0", "url": "https://registry.npmjs.org/bash-language-server/-/bash-language-server-5.6.0.tgz", "sha256": "56d22481ffd0eed3edd23d1130554da31dc186d935202f08cf7ce3894fe801be", "entry": "out/cli.js"},
+    {"name": "dockerfile-language-server-nodejs", "version": "0.15.0", "url": "https://registry.npmjs.org/dockerfile-language-server-nodejs/-/dockerfile-language-server-nodejs-0.15.0.tgz", "sha256": "32ee93b98f43d8d60273019b7ed12a263593ba3a2308442ca7449d49676f480d", "entry": "bin/docker-langserver"},
+    {"name": "@microsoft/compose-language-service", "version": "0.5.0", "url": "https://registry.npmjs.org/@microsoft/compose-language-service/-/compose-language-service-0.5.0.tgz", "sha256": "2d6af41c4aabaa5c4fc89d2293eae6b561fc37b2c663a504000383394f715700", "entry": "bin/docker-compose-langserver"},
+    {"name": "vscode-langservers-extracted", "version": "4.10.0", "url": "https://registry.npmjs.org/vscode-langservers-extracted/-/vscode-langservers-extracted-4.10.0.tgz", "sha256": "d6e2d090d09c4b91daa74e9e7462a3d3f244efb96aa5111004cfffa49d6dc9ef", "entry": null},
+    {"name": "yaml-language-server", "version": "1.24.0", "url": "https://registry.npmjs.org/yaml-language-server/-/yaml-language-server-1.24.0.tgz", "sha256": "11a321032012131f2ccdf7952dc347ce05291c66931a5de2f449b2dfc81f24b2", "entry": "bin/yaml-language-server"}
+  ]
+}

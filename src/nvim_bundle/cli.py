@@ -9,6 +9,7 @@ from .models import (
     DEFAULT_TREE_SITTER_SOURCE,
     DEFAULT_NVIM_VERSION,
     DEFAULT_TREE_SITTER_VERSION,
+    PROFILES,
     TARGETS,
 )
 from .package import PackageOptions, package_bundle
@@ -47,6 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     package = subparsers.add_parser("package", help="Build and verify a target bundle.")
     package.add_argument("--target", choices=tuple(TARGETS), required=True)
+    package.add_argument("--profile", choices=PROFILES, default="core")
     package.add_argument("--output-dir", default=".build/output")
     package.add_argument("--work-dir", default=".build")
     package.add_argument("--blink-version", default=DEFAULT_BLINK_VERSION)
@@ -70,6 +72,7 @@ def main(argv: list[str] | None = None) -> int:
                 root,
                 PackageOptions(
                     target=TARGETS[args.target],
+                    profile=args.profile,
                     output_dir=_path(args.output_dir, root),
                     work_dir=_path(args.work_dir, root),
                     blink_version=args.blink_version,

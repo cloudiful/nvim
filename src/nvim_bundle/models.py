@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+PROFILES = ("core", "full")
+
+
 @dataclass(frozen=True)
 class Target:
     name: str
@@ -14,6 +17,12 @@ class Target:
     @property
     def is_linux_musl(self) -> bool:
         return self.name.startswith("linux-") and self.name.endswith("-musl")
+
+
+def validate_profile(value: str) -> str:
+    if value not in PROFILES:
+        raise ValueError(f"Unsupported bundle profile: {value}")
+    return value
 
 
 TARGETS = {

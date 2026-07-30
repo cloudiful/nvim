@@ -13,6 +13,8 @@ jobs:
   build:
     name: ${{ matrix.target }}
     runs-on: ${{ matrix.runner }}
+    env:
+      BUNDLE_VERIFY_TOOLS: "1"
     strategy:
       fail-fast: false
       matrix:
@@ -20,7 +22,7 @@ jobs:
           - target: linux-x86_64-musl
             runner: ubuntu-latest
           - target: linux-aarch64-musl
-            runner: ubuntu-latest
+            runner: ubuntu-24.04-arm
           - target: macos-arm64
             runner: macos-14
           - target: windows-x86_64
@@ -84,16 +86,19 @@ jobs:
         with:
           version: 0.14.1
 
-      - name: Build bundle
-        run: >-
-          uv run --locked nvim-bundle package
-          --target ${{ matrix.target }}
-          --output-dir "$RUNNER_TEMP/nvim-config-output"
+      - name: Build core and full bundles
+        run: |
+          for profile in core full; do
+            uv run --locked nvim-bundle package \
+              --target "${{ matrix.target }}" \
+              --profile "$profile" \
+              --output-dir "$RUNNER_TEMP/nvim-config-output"
+          done
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: nvim-config-${{ matrix.target }}
+          name: nvim-config-${{ matrix.target }}-bundles
           path: ${{ runner.temp }}/nvim-config-output/*.tar.zst
           if-no-files-found: error
 

@@ -14,6 +14,8 @@ from .models import (
     DEFAULT_TREE_SITTER_SOURCE,
     Target,
 )
+from .models import validate_profile
+from .tools import stage_full_tools
 from .runtime import (
     BuildError,
     data_dir_name,
@@ -28,6 +30,7 @@ from .treesitter import build_treesitter
 @dataclass(frozen=True)
 class PackageOptions:
     target: Target
+    profile: str
     output_dir: Path
     work_dir: Path
     blink_version: str
@@ -36,8 +39,15 @@ class PackageOptions:
     treesitter_max_jobs: int | None
 
 
+def archive_name(target: Target, profile: str) -> str:
+    profile = validate_profile(profile)
+    suffix = "-full" if profile == "full" else ""
+    return f"nvim-config-{target.name}{suffix}.tar.zst"
+
+
 def package_bundle(root: Path, options: PackageOptions) -> Path:
     target = options.target
+    profile = validate_profile(options.profile)
     require_tools("nvim", "git", "cargo", "rustup", "tar", "zstd")
     if target.is_linux_musl:
         require_tools("zig")
@@ -45,7 +55,7 @@ def package_bundle(root: Path, options: PackageOptions) -> Path:
     bundle_root = options.work_dir / "bundle"
     stage = bundle_root / "nvim"
     output_dir = options.output_dir
-    archive = output_dir / f"nvim-config-{target.name}.tar.zst"
+    archive = output_dir / archive_name(target, profile)
     shutil.rmtree(bundle_root, ignore_errors=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     archive.unlink(missing_ok=True)
@@ -70,6 +80,9 @@ def package_bundle(root: Path, options: PackageOptions) -> Path:
         version=options.blink_version,
         base_url=options.blink_base_url,
     )
+
+    if profile == "full":
+        stage_full_tools(root, stage, target)
 
     plugin_root = stage / ".data" / data_dir_name() / "site" / "pack" / "core" / "opt"
     remove_git_directories(plugin_root)
@@ -139,8 +152,9 @@ def _remove_readonly(function, path, exc) -> None:
 def verify_bundle(root: Path, bundle_root: Path, stage: Path, target: Target) -> None:
     skip_load = "1" if target.is_linux_musl else "0"
     verify_script = root / "scripts" / "verify_bundle.lua"
+    nvim = shutil.which("nvim") or "nvim"
     command = [
-        "nvim",
+        nvim,
         "--headless",
         "-i",
         "NONE",
@@ -151,11 +165,14 @@ def verify_bundle(root: Path, bundle_root: Path, stage: Path, target: Target) ->
         "-c",
         "qa!",
     ]
+    path_entries = [str(stage / "bin"), str(Path(nvim).parent)]
     env = environment(
         XDG_CONFIG_HOME=bundle_root,
         NVIM_APPNAME="nvim",
         TREESITTER_LANGUAGES_FILE=root / "build" / "treesitter-languages.txt",
         TREESITTER_SKIP_LOAD=skip_load,
+        BUNDLE_PROFILE="full" if (stage / "tool-manifest.json").is_file() else "core",
+        PATH=os.pathsep.join(path_entries),
     )
     run(command, env=env)
 

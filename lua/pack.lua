@@ -1,6 +1,7 @@
 local specs = require("plugin_specs")
 
 local M = {}
+M.tools = require("tool_resolver")
 local config_root = vim.fn.stdpath("config")
 local data_dir_name = vim.fn.has("win32") == 1 and "nvim-data" or "nvim"
 local bundled_site = vim.fs.joinpath(config_root, ".data", data_dir_name, "site")

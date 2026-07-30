@@ -3,17 +3,29 @@
 This is a Neovim 0.12 configuration packaged with its plugins, Tree-sitter
 parsers, queries, and blink.cmp native fuzzy matcher.
 
-The release archives are offline bundles. Linux archives target musl and are
-provided for x86_64 and aarch64. macOS arm64 and Windows x86_64 archives are
-also available.
+Release archives are offline bundles for Linux musl x86_64/aarch64, macOS
+arm64, and Windows x86_64. Extract an archive as the `nvim` directory under
+your Neovim configuration directory. The archive does not include the
+Neovim executable.
 
-Extract an archive as the `nvim` directory under your Neovim configuration
-directory. The bundle does not include the Neovim executable or language
-servers.
+Each target has two profiles:
 
-Formatting is manual through `<leader>fm`. Conform uses formatter commands
-already available through the project environment, `mise`, or `PATH`, and
-falls back to the attached LSP when no formatter is installed. Formatter
-binaries and language servers are intentionally outside the core offline
-bundle. Java project support additionally requires `jdtls`, Java 21 or newer,
-and Maven or Gradle project tooling.
+- `core` is the existing lightweight archive. Its name and contents remain
+  compatible and it contains no formatter or LSP assets.
+- `full` adds the target-compatible tools and `tool-manifest.json`. The
+  archive name ends in `-full.tar.zst`.
+
+Use `<leader>fm` for formatting. The resolver checks project tools, `mise`,
+and `PATH` before using tools from a full bundle. The manifest reports every
+tool as `bundled`, `external`, or `unsupported`; it never hides a platform
+difference.
+
+| Target | Bundled in `full` | External | Unsupported |
+| --- | --- | --- | --- |
+| Linux x86_64 musl | `stylua`, `rustfmt`, `gofmt`, `shfmt`, `rust-analyzer`, `tombi` | Node, Prettier, Prettierd, Node-based LSPs, Java/Nushell/Hyprland tools | LuaLS |
+| Linux aarch64 musl | `stylua`, `rustfmt`, `gofmt`, `shfmt`, `tombi` | Node, Prettier, Prettierd, Node-based LSPs, Java/Nushell/Hyprland tools | LuaLS, rust-analyzer |
+| macOS arm64 | All listed formatter/LSP assets, including Node, Prettier, Prettierd, LuaLS, rust-analyzer, Tombi, vtsls, and Vue LSP | Java/Nushell/Hyprland tools | None of the listed assets |
+| Windows x86_64 | All listed formatter/LSP assets, including Node, Prettier, Prettierd, LuaLS, rust-analyzer, Tombi, vtsls, and Vue LSP | Java/Nushell/Hyprland tools | None of the listed assets |
+
+Java support still requires `jdtls`, Java 21 or newer, and Maven or Gradle
+project tooling. The full bundle does not include those project dependencies.

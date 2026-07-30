@@ -12,6 +12,19 @@ local prettier_filetypes = {
     "markdown",
 }
 
+local tools = require("pack").tools
+
+local function bundled_or_external(name)
+    return function()
+        local command = tools.resolve(name)
+        if not command then
+            tools.explain(name)
+            return name
+        end
+        return command
+    end
+end
+
 local formatters_by_ft = {
     lua = { "stylua" },
     rust = { "rustfmt", lsp_format = "fallback" },
@@ -32,6 +45,14 @@ end
 
 require("conform").setup({
     formatters_by_ft = formatters_by_ft,
+    formatters = {
+        stylua = { command = bundled_or_external("stylua") },
+        rustfmt = { command = bundled_or_external("rustfmt") },
+        gofmt = { command = bundled_or_external("gofmt") },
+        shfmt = { command = bundled_or_external("shfmt") },
+        prettier = { command = bundled_or_external("prettier") },
+        prettierd = { command = bundled_or_external("prettierd") },
+    },
     default_format_opts = {
         timeout_ms = 3000,
         async = false,
