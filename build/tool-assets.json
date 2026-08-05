@@ -35,7 +35,7 @@
         "linux-x86_64-musl": {"url": "https://go.dev/dl/go1.25.12.linux-amd64.tar.gz", "sha256": "234828b7a89e0e303d2556310ee549fbcf253d28de937bac3da13d6294262ac1"},
         "linux-aarch64-musl": {"url": "https://go.dev/dl/go1.25.12.linux-arm64.tar.gz", "sha256": "8b5884aef89600aef5b0b051fb971f11f49bb996521e911f30f02a66884f7bd2"},
         "macos-arm64": {"url": "https://go.dev/dl/go1.25.12.darwin-arm64.tar.gz", "sha256": "fa2c88bbcf64bd3b2aef355f026cfec6d3a4a01c132f999c8f8c964eb767164f"},
-        "windows-x86_64": {"url": "https://go.dev/dl/go1.25.12.windows-amd64.zip", "sha256": "d5dc82da351b00e5eedd04f41356817d674cc4308131f0f638a5b14c5c3af4cb"}
+        "windows-x86_64": {"url": "https://go.dev/dl/go1.25.12.windows-amd64.zip", "sha256": "d5dc82da351b00e5eedd04f41356817d674cc4308131f0f638a5b14c5c3af4cb", "format": "zip"}
       }
     },
     "shfmt": {
@@ -59,7 +59,7 @@
       "targets": {
         "linux-x86_64-musl": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-x86_64-unknown-linux-musl.gz", "sha256": "4793930e0fe32f18ed7e8e689df3ebb03b632f76c16625c44754fb42ce39fc72"},
         "macos-arm64": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-aarch64-apple-darwin.gz", "sha256": "102215ae7e7a41c0dda8f24e910a01e757f58091204863e5e3e6696b743f7e97"},
-        "windows-x86_64": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-x86_64-pc-windows-msvc.zip", "sha256": "7abdf50734026de963b3b25eba7714be8acf43a15ffb7f4f9d8b041e796ce2c9"}
+        "windows-x86_64": {"url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-07-27/rust-analyzer-x86_64-pc-windows-msvc.zip", "sha256": "7abdf50734026de963b3b25eba7714be8acf43a15ffb7f4f9d8b041e796ce2c9", "format": "zip"}
       }
     },
     "tombi": {

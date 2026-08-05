@@ -25,7 +25,7 @@ from nvim_bundle.download import (
 from nvim_bundle.install import _extract_archive
 from nvim_bundle.models import NVIM_ASSETS, TARGETS
 from nvim_bundle.package import _remove_readonly, archive_name, create_archive, remove_tree
-from nvim_bundle.tools import load_asset_config, parse_manifest, tool_statuses
+from nvim_bundle.tools import TOOL_DEFINITIONS, load_asset_config, parse_manifest, tool_statuses
 from nvim_bundle.runtime import host_key
 from nvim_bundle.treesitter import find_parser_source, find_scanner_source
 from nvim_bundle.tool_staging import _find_rust_runtime_library_dir
@@ -79,6 +79,33 @@ class TargetTests(unittest.TestCase):
         config = load_asset_config(root)
         self.assertEqual(config["schema_version"], 1)
         self.assertTrue(config["node_packages"])
+
+    def test_tool_asset_formats_match_url_extensions(self) -> None:
+        root = Path(__file__).parents[1]
+        config = load_asset_config(root)
+        from nvim_bundle.tool_staging import _asset
+
+        extensions = {
+            ".zip": "zip",
+            ".tar.gz": "tar.gz",
+            ".tar.xz": "tar.xz",
+            ".gz": "gz",
+            ".exe": "raw",
+        }
+        for name in ("node", *[d.asset for d in TOOL_DEFINITIONS if d.asset]):
+            for target in TARGETS.values():
+                asset = _asset(config, name, target)
+                if asset is None:
+                    continue
+                expected = next(
+                    (fmt for ext, fmt in extensions.items() if asset["url"].endswith(ext)),
+                    "raw",
+                )
+                self.assertEqual(
+                    asset["format"],
+                    expected,
+                    f"{name} format mismatch for {target.name}",
+                )
 
     def test_platform_tool_statuses_are_explicit(self) -> None:
         root = Path(__file__).parents[1]
