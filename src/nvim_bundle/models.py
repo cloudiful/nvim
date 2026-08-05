@@ -13,10 +13,19 @@ class Target:
     blink_extension: str
     blink_library: str
     zig_target: str | None = None
+    tool_asset_name: str | None = None
 
     @property
     def is_linux_musl(self) -> bool:
         return self.name.startswith("linux-") and self.name.endswith("-musl")
+
+    @property
+    def is_linux_gnu(self) -> bool:
+        return self.name.startswith("linux-") and self.name.endswith("-gnu")
+
+    @property
+    def tool_target(self) -> str:
+        return self.tool_asset_name or self.name
 
 
 def validate_profile(value: str) -> str:
@@ -39,6 +48,20 @@ TARGETS = {
         blink_extension=".so",
         blink_library="libblink_cmp_fuzzy.so",
         zig_target="aarch64-linux-musl",
+    ),
+    "linux-x86_64-gnu": Target(
+        name="linux-x86_64-gnu",
+        rust_triple="x86_64-unknown-linux-gnu",
+        blink_extension=".so",
+        blink_library="libblink_cmp_fuzzy.so",
+        tool_asset_name="linux-x86_64-musl",
+    ),
+    "linux-aarch64-gnu": Target(
+        name="linux-aarch64-gnu",
+        rust_triple="aarch64-unknown-linux-gnu",
+        blink_extension=".so",
+        blink_library="libblink_cmp_fuzzy.so",
+        tool_asset_name="linux-aarch64-musl",
     ),
     "macos-arm64": Target(
         name="macos-arm64",

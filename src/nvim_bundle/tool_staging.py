@@ -16,7 +16,7 @@ def _asset(config: dict, name: str, target: Any) -> dict | None:
     entry = config["assets"].get(name)
     if not entry:
         return None
-    selected = entry["targets"].get(target.name)
+    selected = entry["targets"].get(target.tool_target)
     if selected is None:
         return None
     return {**entry, **selected}

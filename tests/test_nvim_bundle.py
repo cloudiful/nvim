@@ -38,11 +38,20 @@ class TargetTests(unittest.TestCase):
             {
                 "linux-x86_64-musl",
                 "linux-aarch64-musl",
+                "linux-x86_64-gnu",
+                "linux-aarch64-gnu",
                 "macos-arm64",
                 "windows-x86_64",
             },
         )
         self.assertTrue(TARGETS["linux-x86_64-musl"].is_linux_musl)
+        self.assertFalse(TARGETS["linux-x86_64-gnu"].is_linux_musl)
+        self.assertTrue(TARGETS["linux-x86_64-gnu"].is_linux_gnu)
+        self.assertEqual(
+            TARGETS["linux-x86_64-gnu"].tool_target,
+            TARGETS["linux-x86_64-musl"].name,
+        )
+        self.assertEqual(TARGETS["macos-arm64"].tool_target, "macos-arm64")
         self.assertFalse(TARGETS["macos-arm64"].is_linux_musl)
 
     @patch("platform.system", return_value="Darwin")
@@ -75,9 +84,14 @@ class TargetTests(unittest.TestCase):
         root = Path(__file__).parents[1]
         macos = tool_statuses(root, TARGETS["macos-arm64"])
         linux_arm = tool_statuses(root, TARGETS["linux-aarch64-musl"])
+        linux_gnu = tool_statuses(root, TARGETS["linux-x86_64-gnu"])
         self.assertEqual(macos["prettier"], "bundled")
         self.assertEqual(linux_arm["prettier"], "external")
         self.assertEqual(linux_arm["rust-analyzer"], "unsupported")
+        self.assertEqual(linux_gnu["stylua"], "bundled")
+        self.assertEqual(linux_gnu["rust-analyzer"], "bundled")
+        self.assertEqual(linux_gnu["prettier"], "external")
+        self.assertEqual(linux_gnu["lua-language-server"], "unsupported")
 
 
 class DownloadTests(unittest.TestCase):

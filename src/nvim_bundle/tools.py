@@ -116,14 +116,14 @@ def parse_manifest(path: Path) -> dict:
 
 def tool_statuses(root: Path, target: Target) -> dict[str, str]:
     assets = load_asset_config(root)["assets"]
-    node_available = target.name in assets["node"]["targets"]
+    node_available = target.tool_target in assets["node"]["targets"]
     statuses: dict[str, str] = {}
     for definition in TOOL_DEFINITIONS:
         if definition.name == "node":
             statuses[definition.name] = "bundled" if node_available else "external"
         elif definition.package:
             statuses[definition.name] = "bundled" if node_available else "external"
-        elif definition.asset and target.name in assets[definition.asset]["targets"]:
+        elif definition.asset and target.tool_target in assets[definition.asset]["targets"]:
             statuses[definition.name] = "bundled"
         else:
             statuses[definition.name] = "unsupported"

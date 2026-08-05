@@ -23,6 +23,10 @@ jobs:
             runner: ubuntu-latest
           - target: linux-aarch64-musl
             runner: ubuntu-24.04-arm
+          - target: linux-x86_64-gnu
+            runner: ubuntu-latest
+          - target: linux-aarch64-gnu
+            runner: ubuntu-24.04-arm
           - target: macos-arm64
             runner: macos-14
           - target: windows-x86_64
@@ -81,7 +85,7 @@ jobs:
           '+qa!'
 
       - name: Install Zig cross compiler
-        if: startsWith(matrix.target, 'linux-')
+        if: contains(matrix.target, 'musl')
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: 0.14.1

@@ -135,6 +135,6 @@ def validate_architecture(output: Path, target: Target, language: str) -> None:
         (line.split(":", 1)[1].strip() for line in result.stdout.splitlines() if line.startswith("  Machine:")),
         "",
     )
-    expected = "X86-64" if target.name == "linux-x86_64-musl" else "AArch64"
+    expected = "X86-64" if target.name.startswith("linux-x86_64-") else "AArch64"
     if expected.lower() not in machine.lower():
         raise BuildError(f"Unexpected parser architecture for {language}: {machine}")
