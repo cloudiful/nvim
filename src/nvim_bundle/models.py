@@ -77,7 +77,7 @@ TARGETS = {
     ),
 }
 
-DEFAULT_NVIM_VERSION = "0.12.4"
+DEFAULT_NVIM_VERSION = "0.12.5"
 DEFAULT_TREE_SITTER_VERSION = "0.26.11"
 DEFAULT_BLINK_VERSION = "v1.10.2"
 DEFAULT_TREE_SITTER_SOURCE = "https://github.com/nvim-treesitter/nvim-treesitter.git"
@@ -94,22 +94,22 @@ class HostAsset:
 NVIM_ASSETS = {
     ("Linux", "x86_64"): HostAsset(
         "nvim-linux-x86_64.tar.gz",
-        "012bf3fcac5ade43914df3f174668bf64d05e049a4f032a388c027b1ebd78628",
+        "bce0f56eda1f1b1db6eee8f4133d7a38813ea07933837dd1777411ca384c6875",
         "nvim",
     ),
     ("Linux", "aarch64"): HostAsset(
         "nvim-linux-arm64.tar.gz",
-        "ceb7e88c6b681f0515d135dcdfad54f5eb4373b25ce6172197cd9a69c758063f",
+        "1aa5ca085249580ae0f91eb14f27ec0919773ff2d99a163d03f3d6c21ac29725",
         "nvim",
     ),
     ("Darwin", "arm64"): HostAsset(
         "nvim-macos-arm64.tar.gz",
-        "51ab83afa66d663627c2ab1be43209b0f4e81360d4598b53efaa4d8195f24c89",
+        "65fb000099e47ca1b762584c484cc833f40e30851a0ec450d4174e16317c1f9b",
         "nvim",
     ),
     ("Windows", "x86_64"): HostAsset(
         "nvim-win64.zip",
-        "9fc3572829ffd13debb6e32555da2c8cc02555568260a9fc4cf1f65bbcca319c",
+        "de8625ba8cf65ebf40eb80a388ba1ec8e9c15b30218821e2c639119b05920de1",
         "nvim.exe",
     ),
 }
