@@ -86,16 +86,27 @@ function M.command(name, args)
     return command, status
 end
 
+function M.message(name, status)
+    return ("Tool %s is %s; install it externally or use a compatible full bundle"):format(name, status)
+end
+
+function M.missing_names()
+    local names = {}
+    for name in pairs(warned) do
+        names[#names + 1] = name
+    end
+    table.sort(names)
+    return names
+end
+
+-- Silent by design: startup must not spam `:messages` / "Press ENTER".
+-- Run `:checkhealth tool_resolver` to see missing tools.
 function M.explain(name)
-    local path, status = M.resolve(name)
-    if path or warned[name] then
+    local path = M.resolve(name)
+    if path then
         return path
     end
     warned[name] = true
-    vim.notify(
-        ("Tool %s is %s; install it externally or use a compatible full bundle"):format(name, status),
-        vim.log.levels.WARN
-    )
     return nil
 end
 
