@@ -62,6 +62,9 @@ M.groups = {
   java = {
     plugin("mfussenegger/nvim-jdtls", "nvim-jdtls"),
   },
+  crates = {
+    plugin("Saecki/crates.nvim", "crates.nvim"),
+  },
 }
 
 M.configs = {
@@ -78,6 +81,7 @@ M.configs = {
   noice = "plugins.noice",
   java = "plugins.java",
   which_key = "plugins.which-key",
+  crates = "plugins.crates",
 }
 
 M.startup_groups = {

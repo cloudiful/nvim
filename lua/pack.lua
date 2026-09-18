@@ -129,6 +129,14 @@ local function register_lazy_hooks()
     end,
   })
 
+  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    group = group,
+    pattern = "Cargo.toml",
+    callback = function()
+      M.ensure("crates")
+    end,
+  })
+
   for _, command_name in ipairs(specs.diffview_commands) do
     diffview_wrapper(command_name)
   end
