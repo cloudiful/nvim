@@ -16,10 +16,35 @@ vim.diagnostic.config({
   virtual_text = true,
 })
 
-local function enable_lsp(name, tool, args)
-  local command = tools.command(tool, args)
+-- Startup is latency-sensitive: resolving a tool spawns processes
+-- (`mise which`, `node -e`), ~290ms for all servers. So at startup we only
+-- build a filetype -> server map (pure Lua, no processes) and enable each
+-- server lazily on the first buffer whose filetype needs it.
+-- `vim.lsp.enable()` re-fires for already-open buffers, so `nvim file.rs`
+-- still attaches correctly.
+local servers = {
+  lua_ls = { tool = "lua-language-server" },
+  rust_analyzer = { tool = "rust-analyzer" },
+  bashls = { tool = "bash-language-server", args = { "start" } },
+  dockerls = { tool = "docker-langserver", args = { "--stdio" } },
+  docker_compose_language_service = { tool = "docker-compose-langserver", args = { "--stdio" } },
+  jsonls = { tool = "vscode-json-language-server", args = { "--stdio" } },
+  tombi = { tool = "tombi", args = { "lsp" } },
+  yamlls = { tool = "yaml-language-server", args = { "--stdio" } },
+  nushell = { tool = "nu", args = { "--lsp" } },
+  cssls = { tool = "vscode-css-language-server", args = { "--stdio" } },
+  hyprls = { tool = "hyprls" },
+  vue_ls = { tool = "vue-language-server", args = { "--stdio" } },
+}
+
+-- vtsls keeps its explicit filetype list (mirrors the base config).
+local vtsls_filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
+
+local function enable_simple(name)
+  local spec = servers[name]
+  local command = tools.command(spec.tool, spec.args)
   if not command then
-    tools.explain(tool)
+    tools.explain(spec.tool)
     return false
   end
   vim.lsp.config(name, { cmd = command })
@@ -27,20 +52,12 @@ local function enable_lsp(name, tool, args)
   return true
 end
 
-enable_lsp("lua_ls", "lua-language-server")
-enable_lsp("rust_analyzer", "rust-analyzer")
-enable_lsp("bashls", "bash-language-server", { "start" })
-enable_lsp("dockerls", "docker-langserver", { "--stdio" })
-enable_lsp("docker_compose_language_service", "docker-compose-langserver", { "--stdio" })
-enable_lsp("jsonls", "vscode-json-language-server", { "--stdio" })
-enable_lsp("tombi", "tombi", { "lsp" })
-enable_lsp("yamlls", "yaml-language-server", { "--stdio" })
-enable_lsp("nushell", "nu", { "--lsp" })
-enable_lsp("cssls", "vscode-css-language-server", { "--stdio" })
-enable_lsp("hyprls", "hyprls")
-
-local vtsls_command = tools.command("vtsls", { "--stdio" })
-if vtsls_command then
+local function enable_vtsls()
+  local vtsls_command = tools.command("vtsls", { "--stdio" })
+  if not vtsls_command then
+    tools.explain("vtsls")
+    return false
+  end
   local settings = {
     vtsls = {
       tsserver = {
@@ -63,11 +80,62 @@ if vtsls_command then
   vim.lsp.config('vtsls', {
     cmd = vtsls_command,
     settings = settings,
-    filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+    filetypes = vtsls_filetypes,
   })
   vim.lsp.enable("vtsls")
-else
-  tools.explain("vtsls")
+  return true
 end
 
-enable_lsp("vue_ls", "vue-language-server", { "--stdio" })
+local function enable_server(name)
+  if name == "vtsls" then
+    return enable_vtsls()
+  end
+  return enable_simple(name)
+end
+
+local pending = {}
+local ft_to_servers = {}
+
+local function register_filetypes(name, filetypes)
+  if type(filetypes) ~= "table" then
+    return false
+  end
+  for _, ft in ipairs(filetypes) do
+    local list = ft_to_servers[ft]
+    if not list then
+      list = {}
+      ft_to_servers[ft] = list
+    end
+    list[#list + 1] = name
+  end
+  return true
+end
+
+pending["vtsls"] = true
+register_filetypes("vtsls", vtsls_filetypes)
+
+for name in pairs(servers) do
+  pending[name] = true
+  local ok, cfg = pcall(function() return vim.lsp.config[name] end)
+  if not (ok and register_filetypes(name, cfg and cfg.filetypes)) then
+    -- Unknown server: preserve the old behavior and enable at startup.
+    pending[name] = nil
+    enable_server(name)
+  end
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("UserLspLazy", { clear = true }),
+  callback = function(args)
+    local names = ft_to_servers[args.match]
+    if not names then
+      return
+    end
+    for _, name in ipairs(names) do
+      if pending[name] then
+        pending[name] = nil
+        enable_server(name)
+      end
+    end
+  end,
+})

@@ -96,6 +96,22 @@ map({ 'n', 'v' }, '<leader>fg', function()
     ensure_fzf().live_grep({ cwd = get_project_root() })
 end, 'Live grep')
 
+-- IDEA style: Ctrl+Shift+F for project-wide content search.
+-- (In terminal nvim, Cmd key combos usually never reach Neovim;
+-- <D-S-f> below covers GUI frontends like Neovide.)
+map({ 'n', 'v' }, '<C-S-f>', function()
+    ensure_fzf().live_grep({ cwd = get_project_root() })
+end, 'Live grep')
+map({ 'n', 'v' }, '<D-S-f>', function()
+    ensure_fzf().live_grep({ cwd = get_project_root() })
+end, 'Live grep')
+
+-- Double-tap leader for search-everywhere (files, buffers, symbols).
+-- Prefixes inside the picker: `$` buffers, `@` buffer symbols, `#` project symbols.
+map({ 'n', 'v' }, '<leader><leader>', function()
+    ensure_fzf().global({ cwd = get_project_root() })
+end, 'Search everywhere')
+
 map('n', '<leader>fr', function()
     ensure_fzf().oldfiles()
 end, 'Recent files')
