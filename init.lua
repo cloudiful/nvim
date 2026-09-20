@@ -1,3 +1,7 @@
+-- Disable netrw: neo-tree handles directories instead.
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 require('keymaps')
 require('auto_restore')
 require('filetype')
