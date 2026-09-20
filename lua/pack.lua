@@ -161,6 +161,7 @@ function M.setup()
   -- If started as `nvim <dir>`, load neo-tree early so its
   -- hijack_netrw_behavior catches the directory buffer.
   if vim.fn.argc(-1) == 1 and vim.fn.isdirectory(vim.fn.argv(0) --[[@as string]]) == 1 then
+    vim.g.started_with_directory = true
     M.ensure("neo_tree")
   end
 
