@@ -1,0 +1,114 @@
+name: Update dependency pins
+
+on:
+  schedule:
+    # Weekly Monday 03:00 UTC.
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-pins
+  cancel-in-progress: false
+
+jobs:
+  update-pins:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Sync Python project
+        run: uv sync --locked
+
+      - name: Test Python build tool
+        run: uv run --locked python -m unittest discover -s tests -v
+
+      # Uses native `gh` for PR creation to minimize third-party action
+      # dependencies; pinned actions above stay consistent with build.yaml.
+      # A bot PR opened with GITHUB_TOKEN does not trigger further Actions
+      # runs; the next schedule or manual run picks up remaining drift.
+      - name: Update pins and propose PR
+        run: |
+          set -euo pipefail
+          uv run --locked nvim-bundle update-pins
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Stage only the allowlisted pin files; nothing else may enter the PR.
+          git add src/nvim_bundle/models.py nvim-pack-lock.json
+          if git diff --cached --quiet; then
+            echo "No pin changes; skipping commit and PR."
+            exit 0
+          fi
+          git diff --cached --check
+          # Compatibility smoke with the newly pinned Neovim before any commit.
+          # install-nvim only appends to $GITHUB_PATH (applies to later steps),
+          # so export the freshly pinned binary explicitly for this same shell
+          # (cf. runtime.append_github_path which never mutates current PATH).
+          uv run --locked nvim-bundle install-nvim
+          PINNED_BIN="$(pwd)/.build/host/nvim/bin/nvim"
+          if [ ! -x "$PINNED_BIN" ]; then
+            PINNED_BIN="$(pwd)/$(find .build/host/nvim -name nvim -type f | head -1)"
+          fi
+          test -n "${PINNED_BIN:-}" && test -x "$PINNED_BIN"
+          export PATH="$(dirname "$PINNED_BIN"):$PATH"
+          hash -r
+          case "$(command -v nvim)" in
+            *.build/host/nvim/*) ;;
+            *) echo "smoke is not using the pinned Neovim: $(command -v nvim)"; exit 1 ;;
+          esac
+          "$PINNED_BIN" --headless -i NONE -u NONE \
+            '+lua assert(vim.version().major == 0 and vim.version().minor >= 12, "Neovim 0.12+ is required")' \
+            '+qa!'
+          # Plugin fetch smoke uses the existing fetch entrypoint with isolated
+          # temp dirs (no user config writes) and the updated lock file; it now
+          # resolves to the pinned binary via the exported PATH above.
+          stage="$(mktemp -d)"
+          uv run --locked python -c "from pathlib import Path; from nvim_bundle.package import fetch_plugins; fetch_plugins(Path('.').resolve(), Path('$stage'))"
+          # Apply the unchanged existing blink offline patch against the freshly
+          # fetched blink source with the pinned binary (same invocation shape
+          # as fetch_blink in src/nvim_bundle/blink.py).
+          DATA_DIR="$(uv run --locked python -c "from nvim_bundle.runtime import data_dir_name; print(data_dir_name())")"
+          BLINK_DIR="$stage/.data/$DATA_DIR/site/pack/core/opt/blink.cmp"
+          BLINK_VERSION="$(uv run --locked python -c "from nvim_bundle.models import DEFAULT_BLINK_VERSION; print(DEFAULT_BLINK_VERSION)")"
+          BLINK_PLUGIN_DIR="$BLINK_DIR" BLINK_VERSION="$BLINK_VERSION" "$PINNED_BIN" --headless -i NONE -u NONE -l scripts/patch_blink_offline.lua
+          rm -rf "$stage"
+          git commit -m "chore(pins): update stable Neovim and plugin pins"
+          # Observe the existing automation branch before pushing: ls-remote
+          # exits non-zero on network/auth failure (aborts via set -euo
+          # pipefail, never swallowed) and prints empty output when the branch
+          # is absent (first run). Push with an explicit expected remote SHA so
+          # a repeat run updates the existing PR instead of failing stale.
+          REMOTE_SHA="$(git ls-remote origin "refs/heads/automation/update-pins" | awk '{print $1}')"
+          if [ -n "$REMOTE_SHA" ]; then
+            git push --force-with-lease="automation/update-pins:$REMOTE_SHA" origin HEAD:automation/update-pins
+          else
+            git push origin HEAD:automation/update-pins
+          fi
+          existing="$(gh pr list --head automation/update-pins --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create \
+              --title "chore(pins): update stable Neovim and plugin pins" \
+              --body "Weekly stable pin update. Review digests and plugin revisions before merging. Never auto-merge." \
+              --base main \
+              --head automation/update-pins
+          else
+            echo "Updated existing PR #$existing."
+          fi

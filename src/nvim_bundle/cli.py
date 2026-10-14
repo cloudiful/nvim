@@ -14,6 +14,7 @@ from .models import (
 )
 from .package import PackageOptions, package_bundle
 from .runtime import BuildError, fail
+from .updater import CHECK_CLEAN, CHECK_DRIFT, check_pins, update_pins
 
 
 def repository_root() -> Path:
@@ -55,6 +56,18 @@ def build_parser() -> argparse.ArgumentParser:
     package.add_argument("--blink-base-url")
     package.add_argument("--treesitter-source", default=DEFAULT_TREE_SITTER_SOURCE)
     package.add_argument("--treesitter-max-jobs", type=int)
+
+    update_parser = subparsers.add_parser(
+        "update-pins", help="Update pinned Neovim and plugin revisions."
+    )
+    update_parser.add_argument(
+        "--check",
+        action="store_true",
+        help=(
+            "Report drift without writing pins "
+            f"(exit {CHECK_CLEAN} in sync, {CHECK_DRIFT} drift available)."
+        ),
+    )
     return parser
 
 
@@ -81,6 +94,24 @@ def main(argv: list[str] | None = None) -> int:
                     treesitter_max_jobs=args.treesitter_max_jobs,
                 ),
             )
+        elif args.command == "update-pins":
+            if args.check:
+                in_sync, report = check_pins(root)
+                print(report)
+                return CHECK_CLEAN if in_sync else CHECK_DRIFT
+            summary = update_pins(root)
+            if not summary.nvim_changed and not summary.plugin_changes:
+                print(f"pins are in sync (Neovim {summary.nvim_version})")
+            else:
+                if summary.nvim_changed:
+                    print(f"Neovim -> {summary.nvim_version}")
+                for name, (_, new_rev) in sorted(summary.plugin_changes.items()):
+                    print(f"{name} -> {new_rev}")
+                if summary.fallbacks:
+                    print(
+                        "fallbacks (default-branch, not stable): "
+                        + ", ".join(summary.fallbacks)
+                    )
         else:
             parser.error(f"unknown command: {args.command}")
     except BuildError as exc:
