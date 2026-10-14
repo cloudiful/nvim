@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from unittest.mock import patch
 
 from nvim_bundle.cli import build_parser
@@ -394,10 +394,36 @@ class PinnedBinaryPathTests(unittest.TestCase):
             path_file = Path(directory) / "github_path"
             path_file.write_text("", encoding="utf-8")
             before = os.environ.get("PATH", "")
+            pinned_path = Path("/repo/.build/host/nvim/bin")
             with patch.dict(os.environ, {"GITHUB_PATH": str(path_file)}):
-                append_github_path(Path("/repo/.build/host/nvim/bin"))
-                self.assertIn(".build/host/nvim/bin", path_file.read_text(encoding="utf-8"))
+                append_github_path(pinned_path)
+                self.assertEqual(
+                    path_file.read_text(encoding="utf-8"),
+                    os.fspath(pinned_path) + "\n",
+                )
                 self.assertEqual(os.environ.get("PATH", ""), before)
+
+    def test_append_github_path_renders_complete_native_line(self) -> None:
+        # Synthetic POSIX/Windows rendering regression: the helper must write
+        # the complete native path plus newline (no truncation, no separator
+        # mangling). Pure-path fixtures exercise both renderings on any CI OS;
+        # production behavior is unchanged (plain f-string write, no mocks).
+        from nvim_bundle.runtime import append_github_path
+
+        candidates = [
+            PurePosixPath("/repo/.build/host/nvim/bin"),
+            PureWindowsPath("C:/repo/.build/host/nvim/bin"),
+        ]
+        for candidate in candidates:
+            with self.subTest(path=str(candidate)):
+                with tempfile.TemporaryDirectory() as directory:
+                    path_file = Path(directory) / "github_path"
+                    path_file.write_text("", encoding="utf-8")
+                    with patch.dict(os.environ, {"GITHUB_PATH": str(path_file)}):
+                        append_github_path(candidate)  # type: ignore[arg-type]
+                        self.assertEqual(
+                            path_file.read_text(encoding="utf-8"), f"{candidate}\n"
+                        )
 
     def test_smoke_guards_pinned_binary_selection(self) -> None:
         root = Path(__file__).parents[1]
