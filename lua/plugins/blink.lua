@@ -12,7 +12,6 @@ blink.setup({
         implementation = "prefer_rust_with_warning",
         prebuilt_binaries = {
             download = false,
-            force_version = "v1.10.2",
         },
     },
     appearance = {},
