@@ -27,9 +27,9 @@ difference.
 | macOS arm64 | All listed formatter/LSP assets, including Node, Prettier, Prettierd, LuaLS, rust-analyzer, Tombi, vtsls, and Vue LSP | Java/Nushell/Hyprland tools | None of the listed assets |
 | Windows x86_64 | All listed formatter/LSP assets, including Node, Prettier, Prettierd, LuaLS, rust-analyzer, Tombi, vtsls, and Vue LSP | Java/Nushell/Hyprland tools | None of the listed assets |
 
-The `*-gnu` bundles target glibc hosts. The release workflow also builds
-`*-musl` bundles for musl-based hosts such as Alpine; the release table above
-shows the tool support shared by both Linux variants.
+The `*-gnu` bundles target glibc hosts. The `*-musl` bundles target musl-based
+hosts such as Alpine; the release table above shows the tool support shared by
+both Linux variants.
 
 Java support still requires `jdtls`, Java 21 or newer, and Maven or Gradle
 project tooling. The full bundle does not include those project dependencies.
@@ -45,9 +45,4 @@ fallback, not a stable guarantee. Blink tracks the existing 1.x range with
 the plugin rev and native version updated together.
 
 Refresh pins with `uv run --locked nvim-bundle update-pins` (use `--check`
-for a no-write drift report). A weekly GitHub Action and manual
-workflow_dispatch propose one PR on `automation/update-pins` when pins
-change; no changes means no PR, and PRs are never auto-merged. The workflow
-requires `contents: write` and `pull-requests: write`. This repo mirrors
-Forgejo to GitHub: merge the authoritative change per the existing mirror
-setup; updates are proposed on the mirrored GitHub repo.
+for a no-write drift report).
